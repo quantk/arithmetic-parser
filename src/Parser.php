@@ -36,23 +36,17 @@ class Parser
     }
 
     /**
-     * @return BinaryOperator|Integer|Real|UnaryOperator
+     * @param string $tokenType
      * @throws Exception\LexerException
      * @throws ParseError
      */
-    public function term()
+    private function eat(string $tokenType): void
     {
-        $node = $this->factor();
-
-        while (in_array($this->currentToken->type, [Token::MUL, Token::REALDIV], true)) {
-            /** @var Token $operator */
-            $operator = $this->currentToken;
-            /** @psalm-suppress PossiblyNullArgument */
-            $this->eat($this->currentToken->type);
-            $node = new BinaryOperator($node, $operator, $this->factor());
+        if ($this->currentToken->type === $tokenType) {
+            $this->currentToken = $this->lexer->getNextToken();
+        } else {
+            throw new ParseError('Wrong token type');
         }
-
-        return $node;
     }
 
     /**
@@ -94,17 +88,23 @@ class Parser
     }
 
     /**
-     * @param string $tokenType
+     * @return BinaryOperator|Integer|Real|UnaryOperator
      * @throws Exception\LexerException
      * @throws ParseError
      */
-    private function eat(string $tokenType): void
+    public function term()
     {
-        if ($this->currentToken->type === $tokenType) {
-            $this->currentToken = $this->lexer->getNextToken();
-        } else {
-            throw new ParseError('Wrong token type');
+        $node = $this->factor();
+
+        while (in_array($this->currentToken->type, [Token::MUL, Token::REALDIV], true)) {
+            /** @var Token $operator */
+            $operator = $this->currentToken;
+            /** @psalm-suppress PossiblyNullArgument */
+            $this->eat($this->currentToken->type);
+            $node = new BinaryOperator($node, $operator, $this->factor());
         }
+
+        return $node;
     }
 
     /**
