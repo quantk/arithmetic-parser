@@ -15,18 +15,18 @@ class UnaryOperator implements Visitable
      */
     public $operator;
     /**
-     * @var BinaryOperator|Real|Integer|UnaryOperator
+     * @var Visitable
      */
     public $right;
 
     /**
      * UnaryOperator constructor.
      * @param Token $operator
-     * @param BinaryOperator|Integer|Real|UnaryOperator $right
+     * @param Visitable $right
      */
     public function __construct(
         Token $operator,
-        $right
+        Visitable $right
     )
     {
         $this->operator = $operator;

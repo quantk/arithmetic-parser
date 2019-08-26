@@ -12,7 +12,7 @@ use App\Visitor;
 class BinaryOperator implements Visitable
 {
     /**
-     * @var BinaryOperator|Real|Integer|UnaryOperator
+     * @var Visitable
      */
     public $left;
     /**
@@ -20,17 +20,17 @@ class BinaryOperator implements Visitable
      */
     public $operator;
     /**
-     * @var BinaryOperator|Real|Integer|UnaryOperator
+     * @var Visitable
      */
     public $right;
 
     /**
      * BinaryOperator constructor.
-     * @param BinaryOperator|Integer|Real|UnaryOperator $left
+     * @param Visitable $left
      * @param Token $operator
-     * @param BinaryOperator|Integer|Real|UnaryOperator $right
+     * @param Visitable $right
      */
-    public function __construct($left, Token $operator, $right)
+    public function __construct(Visitable $left, Token $operator, Visitable $right)
     {
         $this->left     = $left;
         $this->operator = $operator;
@@ -54,7 +54,8 @@ class BinaryOperator implements Visitable
             case Token::MUL;
                 return $leftValue * $rightValue;
             case Token::REALDIV;
-                if ($rightValue === 0) {
+                //not strict for int/float
+                if ($rightValue == 0) {
                     throw new DivisionByZeroException('Division be zero not allowed');
                 }
                 return $leftValue / $rightValue;
