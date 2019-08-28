@@ -6,9 +6,11 @@ namespace App;
 
 use App\Exception\ParseError;
 use App\Node\BinaryOperator;
+use App\Node\FunctionCall;
 use App\Node\Integer;
 use App\Node\Real;
 use App\Node\UnaryOperator;
+use App\Node\Visitable;
 
 class Parser
 {
@@ -26,6 +28,7 @@ class Parser
      * Parser constructor.
      * @param Lexer $lexer
      * @throws Exception\LexerException
+     * @throws Exception\UnknownIdentifier
      */
     public function __construct(
         Lexer $lexer
@@ -39,6 +42,7 @@ class Parser
      * @param string $tokenType
      * @throws Exception\LexerException
      * @throws ParseError
+     * @throws Exception\UnknownIdentifier
      */
     private function eat(string $tokenType): void
     {
@@ -50,11 +54,12 @@ class Parser
     }
 
     /**
-     * @return Integer|Real|UnaryOperator|BinaryOperator
+     * @return Visitable
      * @throws Exception\LexerException
      * @throws ParseError
+     * @throws Exception\UnknownIdentifier
      */
-    public function factor()
+    public function factor(): Visitable
     {
         $token = $this->currentToken;
 
@@ -77,6 +82,23 @@ class Parser
             return new Real((float)$token->value);
         }
 
+        if ($token->type === Token::FUNCTION_CALL) {
+            $this->eat(Token::FUNCTION_CALL);
+            $this->eat(Token::LPAREN);
+            $args = [];
+            while (true) {
+                $args[] = $this->expr();
+                if ($this->currentToken->type === Token::COMMA) {
+                    $this->eat(Token::COMMA);
+                } else {
+                    break;
+                }
+            }
+            $this->eat(Token::RPAREN);
+
+            return new FunctionCall($token, $args);
+        }
+
         if ($token->type === Token::LPAREN) {
             $this->eat(Token::LPAREN);
             $node = $this->expr();
@@ -88,15 +110,16 @@ class Parser
     }
 
     /**
-     * @return BinaryOperator|Integer|Real|UnaryOperator
+     * @return Visitable
      * @throws Exception\LexerException
      * @throws ParseError
+     * @throws Exception\UnknownIdentifier
      */
-    public function term()
+    public function term(): Visitable
     {
         $node = $this->factor();
 
-        while (in_array($this->currentToken->type, [Token::MUL, Token::REALDIV], true)) {
+        while (in_array($this->currentToken->type, [Token::MUL, Token::REALDIV, Token::POWER], true)) {
             /** @var Token $operator */
             $operator = $this->currentToken;
             /** @psalm-suppress PossiblyNullArgument */
@@ -108,11 +131,12 @@ class Parser
     }
 
     /**
-     * @return BinaryOperator|Integer|Real|UnaryOperator
+     * @return Visitable
      * @throws Exception\LexerException
      * @throws ParseError
+     * @throws Exception\UnknownIdentifier
      */
-    private function expr()
+    private function expr(): Visitable
     {
         $node = $this->term();
 
@@ -128,11 +152,12 @@ class Parser
     }
 
     /**
-     * @return BinaryOperator|Integer|Real|UnaryOperator
+     * @return Visitable
      * @throws Exception\LexerException
      * @throws ParseError
+     * @throws Exception\UnknownIdentifier
      */
-    public function parse()
+    public function parse(): Visitable
     {
         return $this->expr();
     }

@@ -29,11 +29,27 @@ class Interpreter
         $this->visitor = $visitor;
     }
 
+    /**
+     * @param string $input
+     * @return bool|float|int|string|null
+     * @throws Exception\LexerException
+     * @throws Exception\UnknownIdentifier
+     */
+    public static function evaluate(string $input)
+    {
+        $lexer       = new Lexer($input);
+        $parser      = new Parser($lexer);
+        $visitor     = new Visitor();
+        $interpreter = new static($parser, $visitor);
+
+        return $interpreter->interpr();
+    }
 
     /**
      * @return bool|float|int|string|null
      * @throws Exception\LexerException
      * @throws Exception\ParseError
+     * @throws Exception\UnknownIdentifier
      */
     public function interpr()
     {

@@ -6,13 +6,33 @@
 Simple interpreter of arithmetic expressions
 
 # Usage
+
+### Simple arithmetic operations with operation priority 
 ```php
 <?php
-$lexer = new \App\Lexer('(1.0 + 2.0 * 3.0 / ( 6.0*6.0 + 5.0*44.0)) - 0.0234375');
-$parser = new \App\Parser($lexer);
-$visitor = new \App\Visitor();
-$interpreter = new \App\Interpreter($parser, $visitor);
+//1.0
+$result = \App\Interpreter::evaluate('(1.0 + 2.0 * 3.0 / ( 6.0*6.0 + 5.0*44.0)) - 0.0234375');
+?>
+```
 
-$result = $interpreter->interpr(); //1.0
+### Simple functions such as sqrt (also supported cos,sin,tan)
+```php
+<?php
+//2.0
+$result = \App\Interpreter::evaluate('sqrt(4)');
+//3.0
+$result = \App\Interpreter::evaluate('sqrt(2+2*2+3)');
+?>
+```
+
+### Power operator
+```php
+<?php
+//32
+$result = \App\Interpreter::evaluate('2**5');
+//32
+$result = \App\Interpreter::evaluate('2^5');
+//36
+$result = \App\Interpreter::evaluate('(2+2*2)^2');
 ?>
 ```

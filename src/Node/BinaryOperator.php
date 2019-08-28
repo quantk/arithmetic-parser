@@ -53,8 +53,11 @@ class BinaryOperator implements Visitable
                 return $leftValue - $rightValue;
             case Token::MUL;
                 return $leftValue * $rightValue;
+            case Token::POWER:
+                return $leftValue ** $rightValue;
             case Token::REALDIV;
                 //not strict for int/float
+                /** @noinspection TypeUnsafeComparisonInspection */
                 if ($rightValue == 0) {
                     throw new DivisionByZeroException('Division be zero not allowed');
                 }

@@ -6,15 +6,19 @@ namespace App;
 
 class Token
 {
-    public const EOF     = 'eof';
-    public const INT     = 'int';
-    public const REAL    = 'real';
-    public const PLUS    = '+';
-    public const MINUS   = '-';
-    public const REALDIV = '/';
-    public const MUL     = '*';
-    public const LPAREN  = '(';
-    public const RPAREN  = ')';
+    // base tokens
+    public const EOF           = 'eof';
+    public const INT           = 'int';
+    public const REAL          = 'real';
+    public const PLUS          = '+';
+    public const MINUS         = '-';
+    public const REALDIV       = '/';
+    public const MUL           = '*';
+    public const POWER         = 'power';
+    public const LPAREN        = '(';
+    public const RPAREN        = ')';
+    public const COMMA         = ',';
+    public const FUNCTION_CALL = 'function_call';
 
     /**
      * @var string

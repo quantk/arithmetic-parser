@@ -5,6 +5,7 @@ namespace Tests;
 
 
 use App\Exception\LexerException;
+use App\Exception\UnknownIdentifier;
 use App\Lexer;
 use App\Token;
 
@@ -12,6 +13,7 @@ class LexerTest extends TestCase
 {
     /**
      * @throws LexerException
+     * @throws UnknownIdentifier
      */
     public function testLexSimple()
     {
@@ -31,6 +33,7 @@ class LexerTest extends TestCase
 
     /**
      * @throws LexerException
+     * @throws UnknownIdentifier
      */
     public function testBrackets()
     {
@@ -65,6 +68,7 @@ class LexerTest extends TestCase
 
     /**
      * @throws LexerException
+     * @throws UnknownIdentifier
      */
     public function testLexComplex()
     {
