@@ -54,12 +54,39 @@ class Parser
     }
 
     /**
+     * @return FunctionCall
+     * @throws Exception\LexerException
+     * @throws Exception\UnknownIdentifier
+     * @throws ParseError
+     */
+    private function parseFunction(): FunctionCall
+    {
+        $token = $this->currentToken;
+        $this->eat(Token::FUNCTION_CALL);
+        $this->eat(Token::LPAREN);
+        $args = [];
+
+        while (true) {
+            $args[] = $this->expr();
+            if ($this->currentToken->type === Token::COMMA) {
+                $this->eat(Token::COMMA);
+            } else {
+                break;
+            }
+        }
+
+        $this->eat(Token::RPAREN);
+
+        return new FunctionCall($token, $args);
+    }
+
+    /**
      * @return Visitable
      * @throws Exception\LexerException
      * @throws ParseError
      * @throws Exception\UnknownIdentifier
      */
-    public function factor(): Visitable
+    private function factor(): Visitable
     {
         $token = $this->currentToken;
 
@@ -83,20 +110,7 @@ class Parser
         }
 
         if ($token->type === Token::FUNCTION_CALL) {
-            $this->eat(Token::FUNCTION_CALL);
-            $this->eat(Token::LPAREN);
-            $args = [];
-            while (true) {
-                $args[] = $this->expr();
-                if ($this->currentToken->type === Token::COMMA) {
-                    $this->eat(Token::COMMA);
-                } else {
-                    break;
-                }
-            }
-            $this->eat(Token::RPAREN);
-
-            return new FunctionCall($token, $args);
+            return $this->parseFunction();
         }
 
         if ($token->type === Token::LPAREN) {
@@ -115,7 +129,7 @@ class Parser
      * @throws ParseError
      * @throws Exception\UnknownIdentifier
      */
-    public function term(): Visitable
+    private function term(): Visitable
     {
         $node = $this->factor();
 
