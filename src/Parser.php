@@ -151,7 +151,7 @@ class Parser
     {
         $node = $this->exponent();
 
-        while (in_array($this->currentToken->type, [Token::MUL, Token::REALDIV, Token::POWER], true)) {
+        while (in_array($this->currentToken->type, [Token::MUL, Token::REALDIV], true)) {
             /** @var Token $operator */
             $operator = $this->currentToken;
             /** @psalm-suppress PossiblyNullArgument */
