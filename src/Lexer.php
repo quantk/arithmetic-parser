@@ -55,7 +55,13 @@ class Lexer
             $this->advance();
         }
 
-        if (isset(FunctionModel::BUILT_IN_FUNCTIONS[$identifier])) {
+        $startPos = $this->pos;
+        while ($this->input[$startPos] === ' ') {
+            $startPos++;
+        }
+        $nextChar = $this->input[$startPos] ?? null;
+
+        if ($nextChar === '(') {
             return new Token(Token::FUNCTION_CALL, $identifier);
         }
 
