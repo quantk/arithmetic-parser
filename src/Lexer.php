@@ -25,7 +25,6 @@ class Lexer
     /**
      * Lexer constructor.
      * @param string $input
-     * @throws LexerException
      */
     public function __construct(
         string $input
@@ -33,9 +32,6 @@ class Lexer
     {
         $this->input       = $input;
         $this->currentChar = $this->input[$this->pos];
-        if ($this->currentChar === '') {
-            throw new LexerException('Lexer input is empty');
-        }
     }
 
     private function isAlpha(string $char): bool
@@ -76,19 +72,14 @@ class Lexer
     public function getNextToken(): Token
     {
         while ($this->currentChar !== null) {
+            $this->skipWhitespace();
             if ($this->isAlpha($this->currentChar)) {
                 return $this->identifier();
             }
-
-            if ($this->currentChar === ' ') {
-                $this->skipWhitespace();
-            }
-
             if ($this->currentChar === ',') {
                 $this->advance();
                 return new Token(Token::COMMA, ',');
             }
-
             if ($this->currentChar === '+') {
                 $this->advance();
                 return new Token(Token::PLUS, '+');
@@ -102,20 +93,12 @@ class Lexer
                 return new Token(Token::POWER, '^');
             }
             if ($this->currentChar === '*') {
-                if ($this->peek() === '*') {
-                    $this->advance();
-                    $this->advance();
-                    return new Token(Token::POWER, '**');
-                }
-
-                $this->advance();
-                return new Token(Token::MUL, '*');
+                return $this->analyzeAsterisk();
             }
             if ($this->currentChar === '/') {
                 $this->advance();
                 return new Token(Token::REALDIV, '/');
             }
-
             if ($this->currentChar === '(') {
                 $this->advance();
                 return new Token(Token::LPAREN, '(');
@@ -181,5 +164,20 @@ class Lexer
     private function validateNumber(string $number): bool
     {
         return (bool)preg_match('/^[\d]+\.?[\d]*/', $number);
+    }
+
+    /**
+     * @return Token
+     */
+    private function analyzeAsterisk(): Token
+    {
+        if ($this->peek() === '*') {
+            $this->advance();
+            $this->advance();
+            return new Token(Token::POWER, '**');
+        }
+
+        $this->advance();
+        return new Token(Token::MUL, '*');
     }
 }
