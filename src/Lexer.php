@@ -50,7 +50,7 @@ class Lexer
     private function identifier(): Token
     {
         $identifier = '';
-        while ($this->isAlpha($this->currentChar)) {
+        while ($this->currentChar !== null && $this->isAlpha($this->currentChar)) {
             $identifier .= $this->currentChar;
             $this->advance();
         }
