@@ -132,4 +132,24 @@ class InterpreterTest extends TestCase
         $this->expectException(DivisionByZeroException::class);
         $result = Interpreter::evaluate('5/0');
     }
+
+    /**
+     * @throws LexerException
+     * @throws UnknownIdentifier
+     */
+    public function testComplexExp()
+    {
+        $result = Interpreter::evaluate('2^2^3');
+        static::assertSame($result, 256);
+    }
+
+    /**
+     * @throws LexerException
+     * @throws UnknownIdentifier
+     */
+    public function testSuperComplexExpression()
+    {
+        $result = Interpreter::evaluate('33+331-33/4*4*12/4^2');
+        static::assertSame($result, 339.25);
+    }
 }

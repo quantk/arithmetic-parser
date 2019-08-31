@@ -124,6 +124,24 @@ class Parser
     }
 
     /**
+     * @throws Exception\LexerException
+     * @throws Exception\UnknownIdentifier
+     * @throws ParseError
+     */
+    private function exponent(): Visitable
+    {
+        $node = $this->factor();
+
+        while ($this->currentToken->type === Token::POWER) {
+            $operator = $this->currentToken;
+            $this->eat(Token::POWER);
+            $node = new BinaryOperator($node, $operator, $this->exponent());
+        }
+
+        return $node;
+    }
+
+    /**
      * @return Visitable
      * @throws Exception\LexerException
      * @throws ParseError
@@ -131,14 +149,14 @@ class Parser
      */
     private function term(): Visitable
     {
-        $node = $this->factor();
+        $node = $this->exponent();
 
         while (in_array($this->currentToken->type, [Token::MUL, Token::REALDIV, Token::POWER], true)) {
             /** @var Token $operator */
             $operator = $this->currentToken;
             /** @psalm-suppress PossiblyNullArgument */
             $this->eat($this->currentToken->type);
-            $node = new BinaryOperator($node, $operator, $this->factor());
+            $node = new BinaryOperator($node, $operator, $this->exponent());
         }
 
         return $node;
